@@ -1,0 +1,35 @@
+{
+  "name": "mevdad-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portfolio of Artem Kalinichenko — Senior Software Engineer (Web3, AI Automation).",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npx --yes serve@14 out",
+    "lint": "eslint .",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "lenis": "1.3.26",
+    "motion": "12.43.0",
+    "next": "15.5.27",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.7",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.20.5",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "eslint": "9.39.5",
+    "eslint-config-next": "15.5.27",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  }
+}
