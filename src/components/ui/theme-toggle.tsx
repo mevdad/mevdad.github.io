@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { DEFAULT_THEME, THEME_STORAGE_KEY, isTheme, type Theme } from "@/lib/theme";
+import { DEFAULT_THEME, THEME_STORAGE_KEY, applyThemeColor, isTheme, type Theme } from "@/lib/theme";
 
 /**
  * The theme lives on <html data-theme> (set by the blocking head script
@@ -35,6 +35,7 @@ export function ThemeToggle() {
   function toggle() {
     const next: Theme = isDark ? "light" : "dark";
     document.documentElement.dataset.theme = next;
+    applyThemeColor(next);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {

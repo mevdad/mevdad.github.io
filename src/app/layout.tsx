@@ -9,7 +9,7 @@ import { Intro } from "@/components/ui/intro";
 import { profile } from "@/content/profile";
 import { ogImage, siteConfig } from "@/lib/site";
 import { buildPersonJsonLd, serializeJsonLd } from "@/lib/structured-data";
-import { themeInitScript } from "@/lib/theme";
+import { DEFAULT_THEME, THEME_COLORS, themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 /*
@@ -78,7 +78,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "dark light",
-  themeColor: "#0c0e14",
+  themeColor: THEME_COLORS[DEFAULT_THEME],
 };
 
 /**
