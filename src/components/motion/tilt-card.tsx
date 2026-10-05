@@ -30,7 +30,11 @@ export function TiltCard({ children, className = "", maxTilt = 6 }: TiltCardProp
   const glowX = useMotionValue(0);
   const glowY = useMotionValue(0);
 
-  const rect = useRef<DOMRect | null>(null);
+  // Card box in *document* coordinates, measured once on enter (no layout reads
+  // on move, and none that would include our own transform). Storing it in
+  // document space and subtracting the live scroll offset keeps it correct
+  // when the wheel scrolls the page under a stationary cursor.
+  const box = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
   const enabled = useRef(false);
 
   useRenderMotion(cardRef, [rotateX, rotateY], (element) => {
@@ -45,18 +49,24 @@ export function TiltCard({ children, className = "", maxTilt = 6 }: TiltCardProp
     enabled.current =
       event.pointerType === "mouse" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!enabled.current) return;
-    rect.current = event.currentTarget.getBoundingClientRect();
+    const rect = event.currentTarget.getBoundingClientRect();
+    box.current = {
+      left: rect.left + window.scrollX,
+      top: rect.top + window.scrollY,
+      width: rect.width,
+      height: rect.height,
+    };
     glowOpacity.set(1);
   }
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
-    const box = rect.current;
-    if (!enabled.current || !box) return;
-    const localX = event.clientX - box.left;
-    const localY = event.clientY - box.top;
+    const origin = box.current;
+    if (!enabled.current || !origin) return;
+    const localX = event.clientX - (origin.left - window.scrollX);
+    const localY = event.clientY - (origin.top - window.scrollY);
     // -0.5…0.5 from the card centre.
-    const offsetX = localX / box.width - 0.5;
-    const offsetY = localY / box.height - 0.5;
+    const offsetX = localX / origin.width - 0.5;
+    const offsetY = localY / origin.height - 0.5;
     rotateY.set(offsetX * 2 * maxTilt);
     rotateX.set(-offsetY * 2 * maxTilt);
     glowX.set(localX - GLOW_SIZE / 2);

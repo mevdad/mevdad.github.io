@@ -26,9 +26,11 @@ export function Magnetic({ children, strength = 0.3 }: MagneticProps) {
   const y = useMotionValue(0);
   const springX = useSpring(x, SPRING);
   const springY = useSpring(y, SPRING);
-  // Measured once on enter: reading layout on every move would also measure
-  // our own transform and feed it back into the next frame.
-  const rect = useRef<DOMRect | null>(null);
+  // Centre in *document* coordinates, measured once on enter: reading layout on
+  // every move would also measure our own transform and feed it back into the
+  // next frame. Document space + live scroll offset stays correct when the
+  // wheel scrolls the page under a stationary cursor.
+  const center = useRef<{ x: number; y: number } | null>(null);
   const enabled = useRef(false);
 
   useRenderMotion(ref, [springX, springY], (element) => {
@@ -38,14 +40,22 @@ export function Magnetic({ children, strength = 0.3 }: MagneticProps) {
   function onPointerEnter(event: PointerEvent<HTMLSpanElement>) {
     enabled.current =
       event.pointerType === "mouse" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    rect.current = enabled.current ? event.currentTarget.getBoundingClientRect() : null;
+    if (!enabled.current) {
+      center.current = null;
+      return;
+    }
+    const rect = event.currentTarget.getBoundingClientRect();
+    center.current = {
+      x: rect.left + rect.width / 2 + window.scrollX,
+      y: rect.top + rect.height / 2 + window.scrollY,
+    };
   }
 
   function onPointerMove(event: PointerEvent<HTMLSpanElement>) {
-    const box = rect.current;
-    if (!enabled.current || !box) return;
-    x.set((event.clientX - (box.left + box.width / 2)) * strength);
-    y.set((event.clientY - (box.top + box.height / 2)) * strength);
+    const origin = center.current;
+    if (!enabled.current || !origin) return;
+    x.set((event.clientX - (origin.x - window.scrollX)) * strength);
+    y.set((event.clientY - (origin.y - window.scrollY)) * strength);
   }
 
   function onPointerLeave() {
