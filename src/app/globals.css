@@ -1,0 +1,382 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+/* ------------------------------------------------------------------------
+ * Design tokens
+ *
+ * Palette: "ink & signal". A cool blue-black ink with one loud accent —
+ * an acid lime that reads as "live / on" (trading terminals, status LEDs),
+ * backed by violet and teal used only in the decorative mesh.
+ * Dark is the default theme; [data-theme="light"] flips the variables.
+ * Every text/background pair below is chosen to clear WCAG AA (4.5:1).
+ * ---------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+  --bg: oklch(0.155 0.014 265);
+  --bg-elevated: oklch(0.195 0.017 265);
+  --surface: oklch(0.21 0.018 265 / 0.72);
+  --line: oklch(0.34 0.02 265 / 0.7);
+  --line-strong: oklch(0.45 0.02 265);
+  --fg: oklch(0.965 0.008 95);
+  --fg-muted: oklch(0.78 0.014 265);
+  --accent: oklch(0.9 0.19 124);
+  --accent-ink: oklch(0.2 0.04 124);
+  --accent-text: oklch(0.9 0.19 124);
+  --mesh-1: oklch(0.78 0.19 128 / 0.32);
+  --mesh-2: oklch(0.56 0.22 292 / 0.42);
+  --mesh-3: oklch(0.68 0.13 205 / 0.32);
+  --grid-line: oklch(1 0 0 / 0.04);
+  --header-bg: oklch(0.155 0.014 265 / 0.72);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: oklch(0.975 0.006 95);
+  --bg-elevated: oklch(0.995 0.003 95);
+  --surface: oklch(1 0 0 / 0.7);
+  --line: oklch(0.82 0.01 265 / 0.8);
+  --line-strong: oklch(0.65 0.015 265);
+  --fg: oklch(0.2 0.02 265);
+  --fg-muted: oklch(0.43 0.02 265);
+  --accent: oklch(0.88 0.2 124);
+  --accent-ink: oklch(0.2 0.04 124);
+  --accent-text: oklch(0.46 0.13 135);
+  --mesh-1: oklch(0.88 0.2 124 / 0.45);
+  --mesh-2: oklch(0.7 0.17 292 / 0.3);
+  --mesh-3: oklch(0.8 0.11 205 / 0.35);
+  --grid-line: oklch(0 0 0 / 0.045);
+  --header-bg: oklch(0.975 0.006 95 / 0.75);
+}
+
+/* `inline` makes utilities reference the live variables, so the theme switch
+   is a single attribute flip with zero extra CSS per component. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@theme {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ------------------------------------------------------------------------
+ * Base
+ * ---------------------------------------------------------------------- */
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg);
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* Sticky header must not cover anchor targets (read by native jumps and Lenis alike). */
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  /* One consistent, high-contrast focus ring for every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* Programmatic focus targets (skip link, anchor nav) don't need a ring on mouse use. */
+  [tabindex="-1"]:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* ------------------------------------------------------------------------
+ * Utilities
+ * ---------------------------------------------------------------------- */
+@utility container-page {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@utility text-balance-safe {
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------------------
+ * Reveal-on-scroll (CSS-driven, see components/motion/reveal-observer.tsx)
+ *
+ * Content is visible by default (no JS, failed JS, reduced motion).
+ * Only after the observer island mounts does it set html[data-reveal-ready],
+ * which hides not-yet-seen elements; it marks each one [data-revealed] as it
+ * scrolls in. The transition lives on the revealed state only, so hiding is
+ * instant and revealing animates.
+ * ---------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal-ready] [data-reveal]:not([data-revealed]) {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+
+  [data-reveal-ready] [data-reveal][data-revealed] {
+    transition:
+      opacity 0.9s var(--ease-out-expo),
+      transform 0.9s var(--ease-out-expo);
+    transition-delay: calc(var(--reveal-i, 0) * 80ms);
+  }
+}
+
+/* ------------------------------------------------------------------------
+ * Hero entrance — pure CSS so it starts on first paint, before any JS
+ * downloads or hydrates. Transform-only for the headline (keeps it an
+ * early LCP candidate); transform + opacity for the supporting lines.
+ * ---------------------------------------------------------------------- */
+@keyframes rise {
+  from {
+    transform: translate3d(0, 105%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero-line {
+  display: block;
+  overflow: hidden;
+  /* room for descenders inside the clip */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.hero-line > span {
+  display: inline-block;
+}
+
+html {
+  --intro-delay: 0ms;
+}
+
+html[data-intro] {
+  --intro-delay: 900ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-line > span {
+    animation: rise 1s var(--ease-out-expo) both;
+    animation-delay: calc(var(--intro-delay) + var(--i, 0) * 90ms);
+  }
+
+  .hero-fade {
+    animation: fade-up 0.9s var(--ease-out-expo) both;
+    animation-delay: calc(var(--intro-delay) + 200ms + var(--i, 0) * 90ms);
+  }
+}
+
+/* ------------------------------------------------------------------------
+ * Page-load intro: shown once per session (flag set by the inline head
+ * script), never with reduced motion. Transform/opacity only; it never
+ * blocks clicks (pointer-events: none) and is hidden from assistive tech.
+ * ---------------------------------------------------------------------- */
+@keyframes intro-out {
+  to {
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+@keyframes intro-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Transform-only on purpose: an element at opacity 0 is not an LCP candidate
+   until it becomes visible, so fading the intro text in would push LCP back. */
+@keyframes intro-mark {
+  from {
+    transform: translate3d(0, 0.35em, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.intro {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-intro] .intro {
+    display: flex;
+    animation: intro-out 0.8s var(--ease-in-out-quart) 0.75s forwards;
+  }
+
+  html[data-intro] .intro-mark {
+    animation: intro-mark 0.5s var(--ease-out-expo) both;
+  }
+
+  html[data-intro] .intro-bar {
+    transform-origin: left;
+    animation: intro-bar 0.7s var(--ease-in-out-quart) 0.05s both;
+  }
+}
+
+/* ------------------------------------------------------------------------
+ * Gradient mesh — three soft radial "blobs" drifting on transform only.
+ * Radial gradients (no CSS blur filter) keep the GPU cost to compositing.
+ * ---------------------------------------------------------------------- */
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12%, 8%, 0) scale(1.15);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate3d(-14%, 10%, 0) scale(0.95);
+  }
+}
+
+@keyframes drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(8%, -12%, 0) scale(1.2);
+  }
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.mesh-blob--a {
+  background: radial-gradient(closest-side, var(--mesh-1), transparent);
+}
+.mesh-blob--b {
+  background: radial-gradient(closest-side, var(--mesh-2), transparent);
+}
+.mesh-blob--c {
+  background: radial-gradient(closest-side, var(--mesh-3), transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mesh-blob--a {
+    animation: drift-a 22s ease-in-out infinite;
+  }
+  .mesh-blob--b {
+    animation: drift-b 28s ease-in-out infinite;
+  }
+  .mesh-blob--c {
+    animation: drift-c 25s ease-in-out infinite;
+  }
+}
+
+.grid-overlay {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, black 30%, transparent 75%);
+}
+
+/* ------------------------------------------------------------------------
+ * Marquee — CSS-only, duplicated track translated by -50%.
+ * Pauses on hover/focus; with reduced motion it becomes a static wrap.
+ * ---------------------------------------------------------------------- */
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee {
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track {
+    animation: marquee var(--marquee-duration, 40s) linear infinite;
+  }
+  .marquee[data-direction="reverse"] .marquee-track {
+    animation-direction: reverse;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    mask-image: none;
+  }
+  .marquee-track {
+    width: auto;
+    flex-wrap: wrap;
+  }
+  /* The duplicate copy only exists to make the loop seamless. */
+  .marquee-track > [aria-hidden="true"] {
+    display: none;
+  }
+}
+
+/* Scroll-linked progress line: with reduced motion, show it full and static.
+   `!important` in the stylesheet wins over Motion's inline transform. */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-progress {
+    transform: none !important;
+  }
+}
