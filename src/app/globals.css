@@ -380,3 +380,23 @@ html[data-intro] {
     transform: none !important;
   }
 }
+
+/* Hover/menu/theme-icon transitions are utility classes spread over many components;
+   one rule here makes them all instant under reduced motion instead of a `motion-safe:`
+   variant on every one (which is easy to forget on the next component). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* Print / save-as-PDF: JS-driven hidden states must never hide content on paper. */
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

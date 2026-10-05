@@ -18,13 +18,19 @@ export function SiteNav() {
   // no layout reads on every scroll frame.
   useEffect(() => {
     const ids = new Set<string>(navItems.map((item) => item.id));
+    // Sections currently crossing the band. IO only reports *changes*, so the set
+    // is what lets us also clear `active` when the band sits on a section outside
+    // the nav (Principles, Languages) or on none — otherwise aria-current goes stale.
+    const inBand = new Set<SectionId>();
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
           const match = navItems.find((item) => item.id === entry.target.id);
-          if (match) setActive(match.id);
+          if (!match) continue;
+          if (entry.isIntersecting) inBand.add(match.id);
+          else inBand.delete(match.id);
         }
+        setActive(navItems.find((item) => inBand.has(item.id))?.id ?? null);
       },
       { rootMargin: "-45% 0px -50% 0px" },
     );
