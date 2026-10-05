@@ -35,7 +35,7 @@ export function Hero() {
 
         <h1
           id="hero-title"
-          className="font-display text-[clamp(3.4rem,13vw,11.5rem)] leading-[0.88] font-bold tracking-[-0.055em]"
+          className="font-display text-[clamp(2.5rem,13vw,11.5rem)] leading-[0.88] font-bold tracking-[-0.055em]"
         >
           <span className="hero-line">
             <span style={{ "--i": 0 }}>{firstName}</span>

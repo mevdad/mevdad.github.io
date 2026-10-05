@@ -68,13 +68,13 @@ export function Contact() {
             <Magnetic strength={0.2}>
               <a
                 href={`mailto:${email.value}`}
-                className="group inline-flex items-center gap-4 rounded-full bg-accent px-7 py-4 font-display text-lg font-semibold text-accent-ink hover:bg-fg hover:text-bg sm:text-2xl"
+                className="group inline-flex max-w-full items-center gap-3 rounded-full bg-accent px-5 py-4 font-display text-base font-semibold [overflow-wrap:anywhere] text-accent-ink hover:bg-fg hover:text-bg sm:gap-4 sm:px-7 sm:text-2xl"
               >
-                <Icon name="mail" className="size-6" />
+                <Icon name="mail" className="size-6 shrink-0" />
                 {email.value}
                 <Icon
                   name="arrow-up-right"
-                  className="size-5 transition-transform duration-500 ease-out-expo group-hover:translate-x-1 group-hover:-translate-y-1"
+                  className="size-5 shrink-0 transition-transform duration-500 ease-out-expo group-hover:translate-x-1 group-hover:-translate-y-1"
                 />
               </a>
             </Magnetic>

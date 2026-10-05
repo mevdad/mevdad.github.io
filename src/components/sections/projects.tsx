@@ -31,7 +31,7 @@ export function Projects() {
           intro="SaaS, on-chain systems, high-load web and bots — a cross-section of recent work."
         />
 
-        <ul className="grid gap-5 md:grid-cols-6">
+        <ul className="grid grid-cols-1 gap-5 md:grid-cols-6">
           {projects.map((project, index) => (
             <li
               key={project.id}
