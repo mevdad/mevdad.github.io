@@ -34,7 +34,9 @@ export function SmoothScroll() {
       if (disposed || !finePointer || media.matches) return;
       const current = ++generation;
       const { default: LenisCtor } = await import("lenis");
-      if (disposed || current !== generation || media.matches) return;
+      // `lenis` guard: two overlapping start() calls (idle callback + motion-preference
+      // change) can both pass the generation check; a second instance would double-drive scroll.
+      if (disposed || current !== generation || media.matches || lenis) return;
       lenis = new LenisCtor({ autoRaf: true, lerp: 0.11 });
     }
 
@@ -61,26 +63,38 @@ export function SmoothScroll() {
         return;
       }
 
-      const id = decodeURIComponent(url.hash.slice(1));
-      const target = id === "top" ? document.body : document.getElementById(id);
+      // A malformed escape (e.g. "#%E0%A4%A") makes decodeURIComponent throw; leave it to the browser.
+      let id: string;
+      try {
+        id = decodeURIComponent(url.hash.slice(1));
+      } catch {
+        return;
+      }
+      // "#top" is a real focusable element (<div id="top" tabindex="-1"> in the layout), so it is
+      // handled like any other target; only the scroll position is special (0, not the div's offset).
+      const target = document.getElementById(id);
       if (!target) return;
 
       event.preventDefault();
-      const focusTarget = () => {
-        if (target === document.body) return;
-        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
-        target.focus({ preventScroll: true });
-      };
+      // Focus first, without scrolling: it no longer depends on the scroll animation finishing
+      // (an interrupted Lenis scroll never calls onComplete); the scroll below does the moving.
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
 
+      const toTop = id === "top";
       if (lenis) {
-        lenis.scrollTo(id === "top" ? 0 : target, { onComplete: focusTarget });
+        lenis.scrollTo(toTop ? 0 : target);
       } else {
         // Reduced motion / Lenis not ready: jump instantly (CSS scroll-margin handles the header).
-        if (id === "top") window.scrollTo({ top: 0 });
+        if (toTop) window.scrollTo({ top: 0 });
         else target.scrollIntoView({ block: "start" });
-        focusTarget();
       }
-      history.pushState(null, "", id === "top" ? url.pathname : url.hash);
+
+      // Clicking the link for the hash we are already on must not stack identical history entries.
+      const next = toTop ? url.pathname + url.search : url.hash;
+      const alreadyThere = toTop ? window.location.hash === "" : window.location.hash === url.hash;
+      if (alreadyThere) history.replaceState(null, "", next);
+      else history.pushState(null, "", next);
     }
 
     // Start once the browser is idle, so Lenis never competes with hydration.

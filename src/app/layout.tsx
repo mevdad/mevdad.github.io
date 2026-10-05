@@ -103,7 +103,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildPersonJsonLd()) }} />
       </head>
-      <body id="top">
+      <body>
+        {/* "Back to top" target: a real focusable element (focus on <body> is unreliable).
+            tabIndex -1 = focusable by script only, not a tab stop; it precedes the skip link,
+            which therefore stays the first Tab stop. */}
+        <div id="top" tabIndex={-1} />
         <a
           href="#main"
           className="fixed top-3 left-3 z-[70] -translate-y-20 rounded-full bg-accent px-5 py-3 text-sm font-medium text-accent-ink focus-visible:translate-y-0"
