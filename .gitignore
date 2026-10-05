@@ -24,3 +24,6 @@ Thumbs.db
 
 # local audit artifacts
 .lighthouse/
+
+# Claude Code local state / worktrees
+.claude/
