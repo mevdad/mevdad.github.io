@@ -4,6 +4,8 @@ export const siteConfig = {
   title: "Artem Kalinichenko — Senior Software Engineer · Web3 · AI Automation",
   shortTitle: "Artem Kalinichenko",
   locale: "en_US",
+  /** Bump (YYYY-MM-DD) when page content changes; feeds the sitemap <lastmod>. */
+  contentUpdated: "2026-10-05",
 } as const;
 
 export const ogImage = {

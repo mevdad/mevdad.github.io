@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/button-link";
 
+// Next already emits <meta name="robots" content="noindex"> for not-found, so it is not
+// repeated here. Metadata objects are replaced, not deep-merged, so empty `alternates` and a
+// minimal `openGraph` drop the layout's canonical/og:url "/" (a 404 must not claim to be the homepage).
 export const metadata: Metadata = {
   title: "Page not found",
-  robots: { index: false },
+  alternates: {},
+  openGraph: { title: "Page not found" },
 };
 
 /** Exported as out/404.html, which GitHub Pages serves for unknown paths. */

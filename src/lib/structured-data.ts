@@ -17,6 +17,27 @@ type PersonJsonLd = {
   knowsLanguage: string[];
 };
 
+/**
+ * Curated first (what the CV headlines), then every CV skill. Set dedupes
+ * across groups (e.g. "Solidity" is listed under both Languages and Web3),
+ * so no arbitrary length cap is needed and nothing gets cut off mid-list.
+ */
+function buildKnowsAbout(): string[] {
+  return [
+    ...new Set([
+      ...profile.focus,
+      "Full-stack development",
+      "Smart Contracts",
+      "Claude API",
+      "KeyCRM",
+      "Telegram Bots",
+      "Web3.js",
+      "Crypto Trading Bots",
+      ...skillGroups.flatMap((group) => group.items),
+    ]),
+  ];
+}
+
 export function buildPersonJsonLd(): PersonJsonLd {
   const sameAs: string[] = [];
   let email = "";
@@ -53,7 +74,7 @@ export function buildPersonJsonLd(): PersonJsonLd {
     telephone,
     address: { "@type": "PostalAddress", addressLocality: "Kyiv", addressCountry: "UA" },
     sameAs,
-    knowsAbout: skillGroups.flatMap((group) => group.items).slice(0, 30),
+    knowsAbout: buildKnowsAbout(),
     knowsLanguage: ["uk", "en"],
   };
 }

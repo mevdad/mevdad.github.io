@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: `${siteConfig.url}/`,
-      lastModified: new Date(),
+      lastModified: siteConfig.contentUpdated,
       changeFrequency: "monthly",
       priority: 1,
     },
