@@ -6,17 +6,13 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # Monthly rebuild: "11+ years" and the footer year are computed at build time.
+  schedule:
+    - cron: "17 4 1 * *"
 
-# Least privilege: Pages deploy needs pages + id-token, nothing else.
+# Least privilege by default; only the deploy job gets pages/id-token.
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-# One deployment at a time; never cancel a production deploy mid-flight.
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -46,9 +42,6 @@ jobs:
       - name: Build (static export → out/)
         run: pnpm build
 
-      - name: Disable Jekyll processing
-        run: touch out/.nojekyll
-
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
@@ -59,6 +52,14 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    # One production deployment at a time, never cancelled mid-flight. Scoped to
+    # this job so a PR run (which never deploys) cannot queue up against main.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

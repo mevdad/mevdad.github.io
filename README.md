@@ -47,7 +47,8 @@ Content lives only in `src/content` — edit it there, never in components.
 ## Deploy
 
 `.github/workflows/deploy.yml` runs lint → typecheck → build on every push/PR to `main` and, on `main`,
-publishes `out/` with `actions/upload-pages-artifact` + `actions/deploy-pages`.
+publishes `out/` with `actions/upload-pages-artifact` + `actions/deploy-pages`. A monthly cron rebuilds it,
+because "years of experience" and the footer year are computed at build time.
 
 One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 The site is a user site served from the domain root, so there is no `basePath`.
