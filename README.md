@@ -28,14 +28,13 @@ src/
     sections/     Hero, About, Services, Skills, Experience, Projects, Principles, Languages, Contact
     ui/           Header, SiteNav*, ThemeToggle*, Footer, Intro, Marquee, Tag, ButtonLink, icons
     motion/       SmoothScroll* (Lenis), RevealObserver*, Counter*, Magnetic*, TiltCard*, TimelineProgress*
-  content/        Typed content taken from the CV: profile, services, skills, experience, projects
+  content/        Typed content: profile, services, skills, experience, projects
   lib/            site config & section ids, dates, theme, reveal helper, structured data
 ```
 
 `*` = client component (`'use client'`). Everything else is a Server Component rendered to static HTML at build time.
 
-Content lives only in `src/content` — edit it there, never in components. Facts come exclusively from
-`Artem_Kalinichenko_FullStack_CV_2.docx`.
+Content lives only in `src/content` — edit it there, never in components.
 
 ### Motion & accessibility
 
