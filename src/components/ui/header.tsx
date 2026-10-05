@@ -18,6 +18,7 @@ export function Header() {
         {/* Plain <a>, not next/link: the client-side-navigation to "/" (e.g. from the 404 page) does not
             remount the layout-level islands (RevealObserver, scroll-spy), so every [data-reveal]
             stayed opacity:0. A full load re-runs them; same reasoning as ButtonLink. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- intentional, see above */}
         <a href="/" className="group flex items-center gap-3">
           <span
             aria-hidden="true"
