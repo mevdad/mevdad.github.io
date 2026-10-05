@@ -70,7 +70,8 @@ export const metadata: Metadata = {
     description,
     images,
   },
-  robots: { index: true, follow: true },
+  // No `robots` here: index/follow is the default, and an explicit value would be inherited by
+  // the 404 page next to the noindex Next emits for it (two contradicting robots tags).
   formatDetection: { telephone: false, email: false, address: false },
 };
 
