@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { profile } from "@/content/profile";
 import { SiteNav } from "./site-nav";
 import { ThemeToggle } from "./theme-toggle";
@@ -16,7 +15,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-[var(--header-bg)] backdrop-blur-md">
       <div className="container-page relative flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="group flex items-center gap-3">
+        {/* Plain <a>, not next/link: the client-side-navigation to "/" (e.g. from the 404 page) does not
+            remount the layout-level islands (RevealObserver, scroll-spy), so every [data-reveal]
+            stayed opacity:0. A full load re-runs them; same reasoning as ButtonLink. */}
+        <a href="/" className="group flex items-center gap-3">
           <span
             aria-hidden="true"
             className="grid size-9 place-items-center rounded-full bg-accent font-display text-sm font-bold text-accent-ink transition-transform duration-500 ease-out-expo group-hover:rotate-[-12deg]"
@@ -27,7 +29,7 @@ export function Header() {
           <span className="sr-only font-display text-[0.95rem] font-semibold tracking-tight sm:not-sr-only">
             {profile.name}
           </span>
-        </Link>
+        </a>
         <div className="flex items-center gap-2">
           <SiteNav />
           <ThemeToggle />
