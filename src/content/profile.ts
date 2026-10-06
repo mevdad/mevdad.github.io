@@ -17,6 +17,16 @@ export const profile = {
     "I work on Solidity smart contracts, algorithmic trading systems for CEX/DEX (Binance, Bybit, OKX, Uniswap, PancakeSwap), automation with CRM integrations (KeyCRM, marketplaces, payment systems), Telegram bots, distributed scrapers, and AI-based products (Claude AI, OpenAI).",
   ],
   careerStart: "2010-10",
+  /** Transparent-background cutout; WebP with alpha, 3:4. */
+  portrait: {
+    variants: [
+      { src: "/images/portrait-480.webp", width: 480 },
+      { src: "/images/portrait-768.webp", width: 768 },
+    ],
+    width: 480,
+    height: 640,
+    alt: "Artem Kalinichenko, portrait",
+  },
 } as const satisfies Profile;
 
 /**

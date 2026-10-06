@@ -9,12 +9,14 @@ type SectionHeadingProps = {
   id: string;
   title: ReactNode;
   intro?: ReactNode;
+  /** Let the title span the full container instead of the 7-column editorial measure. */
+  wide?: boolean;
 };
 
-export function SectionHeading({ index, eyebrow, id, title, intro }: SectionHeadingProps) {
+export function SectionHeading({ index, eyebrow, id, title, intro, wide = false }: SectionHeadingProps) {
   return (
     <header className="mb-12 grid gap-6 md:mb-16 md:grid-cols-12 md:items-end">
-      <div className="md:col-span-7" {...revealProps(0)}>
+      <div className={wide ? "md:col-span-12" : "md:col-span-7"} {...revealProps(0)}>
         <p className="mb-5 flex items-center gap-3 font-mono text-xs tracking-[0.2em] text-fg-muted uppercase">
           <span className="text-accent-text">{index}</span>
           <span aria-hidden="true" className="h-px w-8 bg-line-strong" />

@@ -31,6 +31,27 @@ export type Profile = {
   about: readonly string[];
   /** Year the professional career started — drives the "years" counter. */
   careerStart: YearMonth;
+  portrait: Portrait;
+};
+
+/** One pre-sized file served from `public/` (root-relative, so it works on the domain root). */
+export type ImageVariant = {
+  src: `/${string}`;
+  /** Intrinsic pixel width — becomes the `w` descriptor in `srcset`. */
+  width: number;
+};
+
+/**
+ * A responsive image without a runtime optimizer (static export).
+ * `variants` is a non-empty tuple: the first entry is the `src` fallback,
+ * so "an image with zero files" can't type-check.
+ */
+export type Portrait = {
+  variants: readonly [ImageVariant, ...ImageVariant[]];
+  /** Intrinsic size of the first variant; reserves the box (no CLS). */
+  width: number;
+  height: number;
+  alt: string;
 };
 
 /**
