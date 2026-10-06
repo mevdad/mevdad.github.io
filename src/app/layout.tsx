@@ -102,9 +102,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildPersonJsonLd()) }} />
       </head>
       <body>
+        {/* Keep JSON-LD outside head's permissive script matching during hydration:
+            an extra inline head script can otherwise be mistaken for this node. */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildPersonJsonLd()) }} />
         {/* "Back to top" target: a real focusable element (focus on <body> is unreliable).
             tabIndex -1 = focusable by script only, not a tab stop; it precedes the skip link,
             which therefore stays the first Tab stop. */}
