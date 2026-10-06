@@ -56,14 +56,14 @@ export const experience = [
   {
     role: "Web Developer",
     company: "Bitrix",
-    location: "Remote",
+    location: "Kyiv, Ukraine",
     period: { start: "2012-06", end: "2012-08" },
     highlights: ["Developed websites based on the 1C-Bitrix CMS."],
   },
   {
     role: "Web Developer",
     company: "R25 Studio",
-    location: "Remote",
+    location: "Kyiv, Ukraine",
     period: { start: "2011-06", end: "2011-08" },
     highlights: ["Built website markup/layout and deployed sites on the DLE CMS."],
   },
