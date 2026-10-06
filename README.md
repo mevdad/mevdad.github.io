@@ -1,6 +1,6 @@
 # mevdad.github.io
 
-Portfolio of **Artem Kalinichenko** — Senior Software Engineer (Web3 · AI Automation).
+Portfolio of **Artem Kalinichenko** — Senior Software Engineer (Backend · Frontend · Web3 · AI Automation).
 Live: https://mevdad.github.io
 
 Next.js 15 (App Router, static export) · React 19 · TypeScript (strict) · Tailwind CSS v4 · Motion · Lenis.

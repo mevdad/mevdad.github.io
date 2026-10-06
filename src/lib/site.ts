@@ -1,11 +1,11 @@
 /** Site-level constants shared by metadata, sitemap, robots and navigation. */
 export const siteConfig = {
   url: "https://mevdad.github.io",
-  title: "Artem Kalinichenko — Senior Software Engineer · Web3 · AI Automation",
+  title: "Artem Kalinichenko — Senior Software Engineer · Backend · Frontend · Web3 · AI Automation",
   shortTitle: "Artem Kalinichenko",
   locale: "en_US",
   /** Bump (YYYY-MM-DD) when page content changes; feeds the sitemap <lastmod>. */
-  contentUpdated: "2026-10-05",
+  contentUpdated: "2026-10-06",
 } as const;
 
 export const ogImage = {

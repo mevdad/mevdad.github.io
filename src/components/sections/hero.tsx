@@ -23,9 +23,18 @@ export function Hero() {
           className="hero-fade mb-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs tracking-[0.18em] text-fg-muted uppercase"
           style={{ "--i": 0 }}
         >
-          <span className="inline-flex items-center gap-2 text-fg">
+          <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-fg">
             <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-text" />
             {profile.headline}
+            {profile.focus.map((item) => (
+              <span key={item} className="inline-flex items-center gap-x-3">
+                <span aria-hidden="true" className="text-fg-muted">
+                  •
+                </span>
+                <span className="sr-only">, </span>
+                <span className="text-accent-text">{item}</span>
+              </span>
+            ))}
           </span>
           <span aria-hidden="true">/</span>
           <span>
@@ -54,11 +63,11 @@ export function Hero() {
               className="hero-fade font-display text-xl leading-snug font-medium tracking-tight text-balance sm:text-2xl"
               style={{ "--i": 1 }}
             >
-              Full-stack engineering for{" "}
+              Full-stack engineering across{" "}
               {profile.focus.map((item, index) => (
                 <span key={item}>
                   <span className="text-accent-text">{item}</span>
-                  {index < profile.focus.length - 1 ? " and " : ""}
+                  {index < profile.focus.length - 2 ? ", " : index === profile.focus.length - 2 ? " and " : ""}
                 </span>
               ))}{" "}
               — from database to deploy.

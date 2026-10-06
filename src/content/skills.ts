@@ -73,7 +73,7 @@ export const skillGroups = [
     items: [
       "Claude API",
       "ChatGPT",
-      "GitHub Copilot",
+      "OpenAI",
       "AI Agents",
       "Telegram Bots",
       "Distributed Web Scraping",

@@ -44,4 +44,27 @@ export const experience = [
     period: { start: "2015-10", end: "2016-07" },
     highlights: ["Built landing pages and blogs, integrated WordPress sites."],
   },
+  {
+    role: "Web Developer",
+    company: "Freelance",
+    location: "Kyiv, Ukraine",
+    period: { start: "2010-10", end: "2016-07" },
+    highlights: [
+      "Worked continuously on a freelance basis (aside from the full-time roles), mainly doing website markup/layout and small PHP scripts.",
+    ],
+  },
+  {
+    role: "Web Developer",
+    company: "Bitrix",
+    location: "Kyiv, Ukraine",
+    period: { start: "2012-06", end: "2012-08" },
+    highlights: ["Developed websites based on the 1C-Bitrix CMS."],
+  },
+  {
+    role: "Web Developer",
+    company: "R25 Studio",
+    location: "Kyiv, Ukraine",
+    period: { start: "2011-06", end: "2011-08" },
+    highlights: ["Built website markup/layout and deployed sites on the DLE CMS."],
+  },
 ] as const satisfies readonly ExperienceItem[];
