@@ -344,6 +344,37 @@ html[data-intro] {
   mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, black 30%, transparent 75%);
 }
 
+/* Hero 3D scene layer: as big as the hero, behind the text. Over the text column
+   (left of the character's slot, `--slot-x` is set by scene.ts) the canvas is dimmed,
+   so a ball flying past the headline never fights it for contrast. */
+@media (min-width: 64rem) {
+  .scene-layer {
+    mask-image: linear-gradient(
+      to right,
+      rgb(0 0 0 / 0.45) calc(var(--slot-x, 0px) - 14rem),
+      #000 calc(var(--slot-x, 0px) - 1rem)
+    );
+  }
+}
+
+/* Hero 3D scene canvas (created by hero-scene/scene.ts). Hidden until its first
+   frame is drawn, then fades in over the poster. Never takes pointer input, so
+   touch scrolling and Lenis wheel scrolling pass straight through it. */
+.scene-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out;
+}
+
+.scene-canvas[data-ready] {
+  opacity: 1;
+}
+
 /* ------------------------------------------------------------------------
  * Marquee — CSS-only, duplicated track translated by -50%.
  * Pauses on hover/focus; with reduced motion it becomes a static wrap.

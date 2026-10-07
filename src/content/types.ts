@@ -121,3 +121,20 @@ export type Contact =
   | { kind: "phone"; label: string; value: string; e164: `+${number}` }
   | { kind: "freelancehunt"; label: string; value: string; href: `https://${string}` }
   | { kind: "github"; label: string; value: string; href: `https://github.com/${string}` };
+
+/** One flying ball in the hero 3D scene: its caption and brand colours (`#rrggbb`). */
+export type BallLabel = {
+  text: string;
+  background: `#${string}`;
+  foreground: `#${string}`;
+};
+
+export type HeroScene = {
+  /** Root-relative `.glb` path in `public/`. */
+  model: `/${string}`;
+  /** Static frame of the scene (WebP with alpha): shown until, or instead of, the live canvas. */
+  poster: { src: `/${string}`; width: number; height: number };
+  labels: readonly [BallLabel, ...BallLabel[]];
+  /** Accessible name of the button that starts the scene when auto-start is skipped. */
+  playLabel: string;
+};
