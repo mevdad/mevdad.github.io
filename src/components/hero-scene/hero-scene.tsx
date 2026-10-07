@@ -13,11 +13,19 @@ import type { SceneHandle } from "./scene"; // type-only: erased at build, pulls
  *
  * Loading strategy (the page's LCP and TBT must not notice the scene exists):
  *   1. SSR/first paint: a fixed-aspect box with a static poster (WebP, ~tens of KB). No JS needed.
- *   2. After `load` AND an idle callback AND the box being on screen: import the scene chunk and
- *      download the model.
- *   3. Skipped entirely (poster + "Play" button instead) for reduced motion, Save-Data, slow
+ *   2. Nothing else happens until the visitor's FIRST REAL GESTURE (mouse move, click, key, wheel,
+ *      scroll, touch). Lab tools (Lighthouse, PageSpeed) never interact, so they measure the page
+ *      without the scene; people always do within seconds. There is deliberately NO fallback timer: a
+ *      timer can land inside a slow audit's measurement window (PSI already keeps tens of seconds), and
+ *      the cost of omitting it is a still poster for someone who never touches anything.
+ *   3. After the gesture: wait for `load` + idle + the box being on screen, make sure the GPU is real
+ *      (not a software rasteriser), then import the scene chunk and download the model. On a software
+ *      rasteriser nothing starts by itself: the "Play" button appears instead.
+ *   4. Skipped entirely (poster + "Play" button instead) for reduced motion, Save-Data, slow
  *      connections and narrow screens. Playing then is the user's explicit choice.
- *   4. Once live, the scene pauses itself off-screen and in background tabs (see scene.ts).
+ *   5. Once live, the scene pauses itself off-screen and in background tabs, and gives up (back to the
+ *      poster, Play offered again) if the device renders under ~25 fps (see scene.ts). Nothing ever
+ *      restarts the scene except a click on Play.
  */
 
 type Phase = "poster" | "loading" | "live";
@@ -41,6 +49,39 @@ function autoStartBlocker(): string | null {
     }
   }
   return null;
+}
+
+/**
+ * True when WebGL would be rasterised on the CPU (SwiftShader, llvmpipe, a VM without GPU, a headless audit
+ * box): there the scene would own the main thread. Cheap and three-free: one throwaway context.
+ * `failIfMajorPerformanceCaveat` makes the browser itself refuse a software context; the renderer-name check
+ * catches the browsers that hand one out anyway. No WebGL at all counts as "can't run it" too.
+ */
+function hasSoftwareRendering(): boolean {
+  const canvas = document.createElement("canvas");
+  const attributes: WebGLContextAttributes = { failIfMajorPerformanceCaveat: true };
+  const gl = canvas.getContext("webgl2", attributes) ?? canvas.getContext("webgl", attributes);
+  if (!gl) return true;
+  const info = gl.getExtension("WEBGL_debug_renderer_info");
+  const renderer = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : "";
+  gl.getExtension("WEBGL_lose_context")?.loseContext(); // give the context back right away
+  return /swiftshader|llvmpipe|softpipe|software|basic render|mesa offscreen/i.test(renderer);
+}
+
+/** Calls `callback` once, on the first trusted user gesture (not on script-dispatched events); returns a canceller. */
+function onFirstGesture(callback: () => void): () => void {
+  const types = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"] as const;
+  const options = { passive: true, capture: true } as const;
+  const cancel = () => {
+    for (const type of types) window.removeEventListener(type, handler, options);
+  };
+  const handler = (event: Event) => {
+    if (!event.isTrusted) return;
+    cancel();
+    callback();
+  };
+  for (const type of types) window.addEventListener(type, handler, options);
+  return cancel;
 }
 
 /** Runs `callback` when the page has loaded and the main thread is idle; returns a canceller. */
@@ -87,8 +128,14 @@ export function HeroScene({ className = "" }: { className?: string }) {
       controller = new AbortController();
     };
 
-    const start = async () => {
+    /** `deliberate` = the visitor pressed Play: that overrides the software-renderer veto (the frame-time guard still applies). */
+    const start = async (deliberate: boolean) => {
       if (started) return;
+      if (!deliberate && hasSoftwareRendering()) {
+        // Never start by ourselves on a CPU-rasterised WebGL: offer Play instead and let the visitor decide.
+        setCanPlay(true);
+        return;
+      }
       started = true;
       setCanPlay(false);
       setPhase("loading");
@@ -100,9 +147,16 @@ export function HeroScene({ className = "" }: { className?: string }) {
           slot,
           signal,
           onFirstFrame: () => setPhase("live"),
+          // Both fall back to the poster with Play still offered: a click retries, nothing retries by itself.
           onContextLost: () => {
             stop();
             setPhase("poster");
+            setCanPlay(true);
+          },
+          onSlow: () => {
+            stop();
+            setPhase("poster");
+            setCanPlay(true);
           },
         });
         if (signal.aborted) mounted.dispose();
@@ -112,23 +166,31 @@ export function HeroScene({ className = "" }: { className?: string }) {
         if (!signal.aborted) setPhase("poster");
       }
     };
-    startRef.current = () => void start();
+    startRef.current = () => void start(true);
 
-    let cancelAuto = () => {};
+    let cancelGesture = () => {};
+    let cancelIdle = () => {};
     let observer: IntersectionObserver | null = null;
+    const cancelAuto = () => {
+      cancelGesture();
+      cancelIdle();
+      observer?.disconnect();
+    };
     if (autoStartBlocker()) {
       setCanPlay(true);
     } else {
-      cancelAuto = whenLoadedAndIdle(() => {
-        observer = new IntersectionObserver(
-          (entries) => {
-            if (!entries.some((entry) => entry.isIntersecting)) return;
-            observer?.disconnect();
-            void start();
-          },
-          { rootMargin: "200px" },
-        );
-        observer.observe(slot);
+      cancelGesture = onFirstGesture(() => {
+        cancelIdle = whenLoadedAndIdle(() => {
+          observer = new IntersectionObserver(
+            (entries) => {
+              if (!entries.some((entry) => entry.isIntersecting)) return;
+              observer?.disconnect();
+              void start(false);
+            },
+            { rootMargin: "200px" },
+          );
+          observer.observe(slot);
+        });
       });
     }
 
@@ -137,7 +199,6 @@ export function HeroScene({ className = "" }: { className?: string }) {
     const onMotionChange = () => {
       if (!motionQuery.matches) return;
       cancelAuto();
-      observer?.disconnect();
       stop();
       setPhase("poster");
       setCanPlay(true);
@@ -148,7 +209,6 @@ export function HeroScene({ className = "" }: { className?: string }) {
       // Runs on unmount AND on StrictMode's dev-only simulated unmount: everything above is undone here.
       motionQuery.removeEventListener("change", onMotionChange);
       cancelAuto();
-      observer?.disconnect();
       startRef.current = null;
       stop();
     };

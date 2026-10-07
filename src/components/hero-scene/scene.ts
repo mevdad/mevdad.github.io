@@ -42,6 +42,8 @@ export interface SceneOptions {
   onFirstFrame: () => void;
   /** The browser took the GPU context away (memory pressure, driver reset). */
   onContextLost: () => void;
+  /** The device can't keep up (see the frame-time guard in the loop): the caller should drop back to the poster. */
+  onSlow: () => void;
 }
 
 export interface SceneHandle {
@@ -54,6 +56,10 @@ const ORDER = ["Fist Fight", "Jab & Kick", "Chapa Giratoria", "Headbutt"];
 const TRAVEL = 2.2; // s a ball flies before the hit
 const REST = 3.0; // s pause in the stance after a round
 const MAX_DPR = 1.5;
+// Frame-time guard: a scene that renders at under ~25 fps on this device is worse than a still poster.
+const GUARD_SKIP_FRAMES = 6; // shader compiles and texture uploads make the first frames slow on any machine
+const GUARD_WINDOW_FRAMES = 45; // ~1-2 s of frames per verdict
+const SLOW_FRAME_MS = 40;
 const PIXEL_BUDGET = 1_800_000; // the canvas is as big as the hero; cap its backing store (~1.25x at 1440x800, 1x at 1080p)
 const FOV = 35;
 const REVEAL_AFTER_FRAMES = 4;
@@ -82,7 +88,7 @@ function disposeTree(root: Scene): void {
   });
 }
 
-export async function mountScene({ container, slot, signal, onFirstFrame, onContextLost }: SceneOptions): Promise<SceneHandle> {
+export async function mountScene({ container, slot, signal, onFirstFrame, onContextLost, onSlow }: SceneOptions): Promise<SceneHandle> {
   signal.throwIfAborted();
 
   // ---- renderer first: if WebGL is unavailable we fail before downloading the model ----
@@ -183,11 +189,12 @@ export async function mountScene({ container, slot, signal, onFirstFrame, onCont
     // `setViewOffset` says "the full view is the slot (aspect 1:1); render the window of it that the
     // canvas covers". The slot is inside that window, so the character looks exactly as in a square
     // frame, while everything around the slot (the rest of the hero) is rendered too.
+    let dprCap = MAX_DPR; // the frame-time guard lowers this to 1
     const resize = () => {
       const area = container.getBoundingClientRect();
       const box = slot.getBoundingClientRect();
       if (!area.width || !area.height || !box.width || !box.height) return;
-      const dpr = Math.max(1, Math.min(window.devicePixelRatio, MAX_DPR, Math.sqrt(PIXEL_BUDGET / (area.width * area.height))));
+      const dpr = Math.max(1, Math.min(window.devicePixelRatio, dprCap, Math.sqrt(PIXEL_BUDGET / (area.width * area.height))));
       renderer.setPixelRatio(dpr);
       renderer.setSize(area.width, area.height, false);
       camera.aspect = box.width / box.height;
@@ -317,9 +324,31 @@ export async function mountScene({ container, slot, signal, onFirstFrame, onCont
     let inView = true;
     const shakeOffset = new Vector3();
 
+    // Frame-time guard. Verdict 1 (average frame > 40 ms): drop the backing store to 1x. Verdict 2 (still > 40 ms):
+    // give up and hand the hero back to the poster. A machine that passes the first window is never judged again.
+    let guardSeen = 0;
+    let guardSum = 0;
+    let guardLowered = false;
+    let guardDone = false;
+    const guard = (elapsed: number) => {
+      if (guardDone || ++guardSeen <= GUARD_SKIP_FRAMES) return;
+      guardSum += elapsed;
+      if (guardSeen < GUARD_SKIP_FRAMES + GUARD_WINDOW_FRAMES) return;
+      const average = guardSum / GUARD_WINDOW_FRAMES;
+      guardSeen = GUARD_SKIP_FRAMES;
+      guardSum = 0;
+      if (average <= SLOW_FRAME_MS) guardDone = true;
+      else if (!guardLowered) {
+        guardLowered = true;
+        dprCap = 1;
+        resize();
+      } else onSlow();
+    };
+
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
-      const dt = Math.min((now - last) / 1000, 0.05);
+      const elapsed = now - last;
+      const dt = Math.min(elapsed / 1000, 0.05);
       last = now;
       const slow = stopLeft > 0;
       if (slow) stopLeft -= dt;
@@ -334,6 +363,7 @@ export async function mountScene({ container, slot, signal, onFirstFrame, onCont
         canvas.dataset.ready = "";
         onFirstFrame();
       }
+      guard(elapsed);
     };
     const sync = () => {
       const shouldRun = inView && !document.hidden && !disposed;
