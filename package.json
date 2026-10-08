@@ -2,7 +2,7 @@
   "name": "mevdad-portfolio",
   "version": "1.0.0",
   "private": true,
-  "description": "Portfolio of Artem Kalinichenko — Senior Software Engineer (Web3, AI Automation).",
+  "description": "Portfolio of Artem Kalinichenko — Software Engineer (Web3, AI Automation).",
   "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": ">=20.9.0"

@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   creator: profile.name,
   keywords: [
     "Artem Kalinichenko",
-    "Senior Software Engineer",
+    profile.headline,
     "Full-stack developer",
     "Web3",
     "Solidity",
