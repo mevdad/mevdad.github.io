@@ -1,6 +1,6 @@
 import type { SkillGroup } from "./types";
 
-/** Source: CV "Technical Skills". */
+/** Source: Artem_Kalinichenko_FullStack_CV_5.docx, "Technical Skills". */
 export const skillGroups = [
   {
     id: "languages",
@@ -72,9 +72,11 @@ export const skillGroups = [
     title: "AI / Automation",
     items: [
       "Claude API",
+      "Claude Code",
+      "Codex",
       "ChatGPT",
-      "OpenAI",
       "AI Agents",
+      "Multi-Agent Orchestration",
       "Telegram Bots",
       "Distributed Web Scraping",
       "Webhooks",

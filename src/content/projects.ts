@@ -1,13 +1,13 @@
 import type { Project } from "./types";
 
-/** Source: CV "Portfolio". Links only where the CV lists one. */
+/** Source: Artem_Kalinichenko_FullStack_CV_5.docx, "Portfolio". Links only where the CV lists one. */
 export const projects = [
   {
     id: "landing-creator",
     title: "LandingCreator.ai",
     category: "SaaS / TypeScript Monorepo / Web3",
     description:
-      "SaaS platform for publishing token landing pages on custom domains with live on-chain market data (SSE price/candle/trade feeds), in-page swaps (PancakeSwap V2 on EVM, Raydium CPMM on Solana), and cross-chain payments via Heleket with automated treasury distribution. A TypeScript monorepo: Next.js frontend, NestJS/Fastify API, and eight independently scalable background workers sharing a framework-free domain layer, with server-side-only transaction signing and idempotent event handling throughout.",
+      "SaaS platform where an AI agent builds landing pages — both Web3 token pages and regular websites — and publishes them on custom domains, with live on-chain market data (SSE price/candle/trade feeds), in-page swaps (PancakeSwap V2 on EVM, Raydium CPMM on Solana), and cross-chain payments via Heleket with automated treasury distribution. A TypeScript monorepo: Next.js frontend, NestJS/Fastify API, and eight independently scalable background workers sharing a framework-free domain layer, with server-side-only transaction signing and idempotent event handling throughout.",
     tags: ["TypeScript", "Next.js", "NestJS", "Fastify", "SSE", "PancakeSwap V2", "Raydium CPMM", "Solana", "EVM"],
     links: [
       { kind: "github", href: "https://github.com/mevdad/landing-creator", label: "Source on GitHub" },
@@ -16,10 +16,10 @@ export const projects = [
   {
     id: "market-making-bot",
     title: "Automated Market-Making Bot for EVM Networks",
-    category: "Blockchain / Web3",
+    category: "Blockchain / Web3 / Node.js",
     description:
-      "A complete software solution for automated token buying/selling and trading volume support. Wallet creation, fund distribution, and custom trading rules. Compatible with all EVM networks (Ethereum, BNB, Polygon, Arbitrum); processes streaming market data in real time.",
-    tags: ["EVM", "Ethereum", "BNB", "Polygon", "Arbitrum", "Real-time data"],
+      "A complete Node.js software solution for automated token buying/selling and trading volume support. Wallet creation, fund distribution, and custom trading rules. Compatible with all EVM networks (Ethereum, BNB, Polygon, Arbitrum); processes streaming market data in real time.",
+    tags: ["Node.js", "EVM", "Ethereum", "BNB", "Polygon", "Arbitrum", "Real-time data"],
     links: [],
   },
   {

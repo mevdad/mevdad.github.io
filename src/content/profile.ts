@@ -1,20 +1,21 @@
 import { fullYearsBetween } from "@/lib/dates";
 import type { Contact, Language, Principle, Profile, Stat } from "./types";
 
-/** Source: Artem_Kalinichenko_FullStack_CV_2.docx (header + "About me"). */
+/** Source: Artem_Kalinichenko_FullStack_CV_5.docx (header + "About me"). */
 export const profile = {
   name: "Artem Kalinichenko",
-  headline: "Senior Software Engineer",
+  headline: "Software Engineer",
   focus: ["Backend", "Frontend", "Web3", "AI Automation"],
   location: "Kyiv, Ukraine",
   workMode: "Remote",
   summary:
     "I build web systems, automation solutions, and Web3/FinTech applications — owning the full engineering process from database design and back-end systems to front-end applications and server installations.",
   about: [
-    "As a Senior Software Engineer, I am responsible for building and creating web systems, automation solutions, and Web3/FinTech applications. I take on the full engineering process from database design and back-end systems to front-end applications and server installations, while making sure that the platform works well.",
+    "As a Software Engineer, I am responsible for building and creating web systems, automation solutions, and Web3/FinTech applications. I take on the full engineering process from database design and back-end systems to front-end applications and server installations, while making sure that the platform works well.",
     "I am specifically interested in tooling that delivers the highest level of performance — such as an overall Google PageSpeed score above 95 or backend latency under 10ms.",
     "My knowledge covers back-end development (Node.js / Nest.js, Python, PHP) and front-end development (Next.js, Svelte, React, Vue.js, Angular); REST, GraphQL and WebSocket APIs; event-driven systems on BullMQ and RabbitMQ; and databases (PostgreSQL, MySQL, Redis).",
-    "I work on Solidity smart contracts, algorithmic trading systems for CEX/DEX (Binance, Bybit, OKX, Uniswap, PancakeSwap), automation with CRM integrations (KeyCRM, marketplaces, payment systems), Telegram bots, distributed scrapers, and AI-based products (Claude AI, OpenAI).",
+    "I work on Solidity smart contracts, algorithmic trading systems for CEX/DEX (Binance, Bybit, OKX, Uniswap, PancakeSwap), automation with CRM integrations (KeyCRM, marketplaces, payment systems), Telegram bots, distributed scrapers, and AI-based products.",
+    "I work AI-first, orchestrating role-based agents with Claude Code and Codex.",
   ],
   careerStart: "2010-10",
   /** Transparent-background cutout; WebP with alpha, 3:4. */
@@ -67,7 +68,7 @@ export function getStats(now: Date): readonly Stat[] {
 /** Source: CV "Working Principles". */
 export const principles = [
   {
-    title: "Senior-Level Ownership",
+    title: "Full Ownership",
     body: "I dive straight into the business domain, select the most pragmatic tech stack without overengineering, and operate entirely without micromanagement.",
   },
   {

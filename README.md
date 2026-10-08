@@ -1,6 +1,6 @@
 # mevdad.github.io
 
-Portfolio of **Artem Kalinichenko** — Senior Software Engineer (Backend · Frontend · Web3 · AI Automation).
+Portfolio of **Artem Kalinichenko** — Software Engineer (Backend · Frontend · Web3 · AI Automation).
 Live: https://mevdad.github.io
 
 Next.js 15 (App Router, static export) · React 19 · TypeScript (strict) · Tailwind CSS v4 · Motion · Lenis.
@@ -35,6 +35,7 @@ src/
 `*` = client component (`'use client'`). Everything else is a Server Component rendered to static HTML at build time.
 
 Content lives only in `src/content` — edit it there, never in components.
+The current content source is the local resume `Artem_Kalinichenko_FullStack_CV_5.docx`.
 
 ### Motion & accessibility
 

@@ -1,6 +1,6 @@
 import type { ExperienceItem } from "./types";
 
-/** Source: CV "Work Experience" (newest first). */
+/** Source: Artem_Kalinichenko_FullStack_CV_5.docx, "Work Experience" (newest first). */
 export const experience = [
   {
     role: "Software Engineer",
@@ -8,10 +8,11 @@ export const experience = [
     location: "Remote",
     period: { start: "2023-05", end: "present" },
     highlights: [
+      "Work with an AI-first approach: orchestrate agents with different roles, running Claude Code and Codex simultaneously and reviewing code with several different models.",
       "Built full-stack applications end to end: backend in Node.js / Nest.js and PHP / Laravel, frontend in React, Next.js, Vue.js, Angular, and Svelte, with real-time data delivery over WebSockets.",
       "Designed parallel background services and task queues for real-time data ingestion, idempotent event processing, and high-load traffic across independently scalable workers.",
-      "Developed Solidity smart contracts for EVM networks: ERC-20 token with a 7-level referral system, casino bank contract, and bonus payout contract.",
-      "Built automated trading / market-making software for EVM networks: continuous on-chain data ingestion, order execution, and real-time volume support.",
+      "Developed Solidity smart contracts for EVM networks: ERC-20 token with a 7-level referral system, automated treasury management, reward distribution logic, and multi-tier incentive protocols.",
+      "Built automated trading / market-making software in Node.js for EVM networks: continuous on-chain data ingestion, order execution, and real-time volume support.",
       "Developed an AI sales agent for a travel business that automatically detects customer intent and recommends relevant tours and services.",
       "Delivered business automation and CRM integrations: end-to-end KeyCRM setup with custom websites, marketplaces (Prom, Rozetka), payment gateways, and shipping providers, including automated trigger flows, lead/order routing, and bi-directional inventory sync via API.",
       "Optimized page load times and throughput on legacy systems, including horizontal scaling and Redis caching.",
